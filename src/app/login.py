@@ -21,7 +21,7 @@ application = Flask(__name__, static_url_path='/static')
 application.debug = os.environ.get('DEBUG_MODE', False)
 CORS(application)
 
-@application.route("/")
+@application.route("/", methods=['GET', 'POST'])
 def login():
    return render_template('login.html')
 
