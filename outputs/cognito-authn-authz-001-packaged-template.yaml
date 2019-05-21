@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Template to deploy AWS Lambda function with code in src
+
+  '
+Parameters:
+  debugMODE:
+    Description: Do you want to enable logging.
+    Default: 'False'
+    Type: String
+    AllowedValues:
+    - 'True'
+    - 'False'
+    ConstraintDescription: Must be boolean.
+  FunctionNameSuffix:
+    Description: Suffix to append to the Lambda functions.
+    Type: String
+    Default: Mystique
+Globals:
+  Function:
+    Runtime: python3.7
+    Timeout: 10
+    MemorySize: 128
+    Environment:
+      Variables:
+        DEBUG_MODE:
+          Ref: debugMODE
+Resources:
+  loginLambdaFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: AWS Lambda to get Cognito Tokens
+      FunctionName:
+        Fn::Sub: loginLambdaFn-${FunctionNameSuffix}
+      Handler: login.lambda_handler
+      CodeUri: s3://sam-templates-011/776cf83098bd528b0bdabfb7a3507ef0
+      Events:
+        loginApi:
+          Type: Api
+          Properties:
+            Path: /api/login
+            Method: POST
+      Policies:
+      - AWSLambdaExecute
+Outputs:
+  loginLambdaFnArn:
+    Description: Login Lambda ARM
+    Value:
+      Fn::GetAtt:
+      - loginLambdaFn
+      - Arn
